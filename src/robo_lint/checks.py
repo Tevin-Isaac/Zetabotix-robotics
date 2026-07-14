@@ -79,19 +79,33 @@ class SuccessRatioResult:
     num_episodes: int
     num_successful: int | None
     ratio: float | None
+    note: str = ""
 
 
 def success_ratio(success: np.ndarray | None, episode_index: np.ndarray) -> SuccessRatioResult:
-    """Per-episode success rate, if the dataset records a success signal.
+    """Per-episode success rate, if the dataset records a *reliable* success signal.
 
     Most public LeRobot datasets don't label success/failure explicitly, so
     this is best-effort and clearly marked as skipped when absent, rather
-    than silently reporting a misleading 100%.
+    than silently reporting a misleading 100%. Some datasets (e.g.
+    lerobot/pusht) do have a `next.success` column, but it's never actually
+    set to True for any frame — a constant column like that isn't a real
+    signal, it's an unpopulated placeholder, so it's treated the same as
+    "absent" rather than reported as a false 0%.
     """
     num_episodes = int(episode_index.max()) + 1 if episode_index.size else 0
 
     if success is None:
         return SuccessRatioResult(checked=False, num_episodes=num_episodes, num_successful=None, ratio=None)
+
+    if not success.any():
+        return SuccessRatioResult(
+            checked=False,
+            num_episodes=num_episodes,
+            num_successful=None,
+            ratio=None,
+            note="A success column is present but never set to True across the whole dataset — treated as an unpopulated placeholder, not a real signal.",
+        )
 
     episodes = np.unique(episode_index)
     num_successful = sum(1 for ep in episodes if success[episode_index == ep].any())

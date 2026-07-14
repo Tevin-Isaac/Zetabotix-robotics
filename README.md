@@ -1,5 +1,16 @@
 # robo-lint
 
+> **Status: reference implementation, not under active standalone development.**
+> While validating this against real datasets we found
+> [`lerobot-doctor`](https://github.com/jashshah999/lerobot-doctor), a more complete tool
+> already covering this ground and already integrated into Hugging Face's official
+> [LeRobot Dataset Visualizer](https://huggingface.co/spaces/lerobot/visualize_dataset).
+> The one confirmed gap — checking actions against a robot's real kinematic limits (from a
+> URDF), not just dataset-internal statistics — is being built as a contribution to that
+> project instead of a competing tool here. See [`docs/ROADMAP.md`](docs/ROADMAP.md) for
+> the full reasoning. This repo stays up as a working, tested implementation of the
+> original checks and a record of how we got here.
+
 **A linter for robot training data.** Point it at a dataset before you train a policy on
 it, and it tells you — in seconds, on a CPU — whether the data is actually going to
 produce a working policy.

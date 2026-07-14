@@ -23,7 +23,15 @@ def _resolve_local_root(source: str) -> Path:
 
     from huggingface_hub import snapshot_download
 
-    return Path(snapshot_download(repo_id=source, repo_type="dataset"))
+    # robo-lint only ever reads meta/ and data/ (parquet); skip videos/, which
+    # dwarf the rest of the dataset in size and aren't used by any check.
+    return Path(
+        snapshot_download(
+            repo_id=source,
+            repo_type="dataset",
+            allow_patterns=["meta/*", "data/**"],
+        )
+    )
 
 
 def load_frames(source: str) -> FrameData:

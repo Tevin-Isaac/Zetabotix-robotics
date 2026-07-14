@@ -57,6 +57,20 @@ def test_success_ratio_skipped_without_signal():
     assert result.num_episodes == 2
 
 
+def test_success_ratio_skipped_when_column_is_never_true():
+    # Real-world case: lerobot/pusht has a next.success column that's always
+    # False for every frame in the dataset — an unpopulated placeholder, not
+    # a genuine "0% success rate" signal.
+    episode_index = np.array([0, 0, 1, 1])
+    success = np.array([False, False, False, False])
+
+    result = success_ratio(success, episode_index)
+
+    assert not result.checked
+    assert result.num_successful is None
+    assert "unpopulated placeholder" in result.note
+
+
 def test_readiness_flags_under_resourced_dataset():
     assert readiness(num_episodes=30, policy_type="act").ready is False
     assert readiness(num_episodes=60, policy_type="act").ready is True

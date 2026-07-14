@@ -56,6 +56,8 @@ class Report:
         s = self.success
         if s.checked:
             lines.append(f"- {s.num_successful}/{s.num_episodes} episodes successful ({s.ratio:.1%})")
+        elif s.note:
+            lines.append(f"- Skipped: {s.note}")
         else:
             lines.append("- Skipped: no success signal found in this dataset")
         lines.append("")
